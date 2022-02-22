@@ -42,6 +42,30 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       value: function draw() {
         /* ctx.fillRect(20,20,10,10) */
         this.head.draw();
+      } // derecha
+
+    }, {
+      key: "right",
+      value: function right() {
+        this.head.x += 10;
+      } // izquierda
+
+    }, {
+      key: "left",
+      value: function left() {
+        this.head.y -= 10;
+      } // arriba
+
+    }, {
+      key: "up",
+      value: function up() {
+        this.head.y -= 10;
+      } //abajo
+
+    }, {
+      key: "down",
+      value: function down() {
+        this.head.x += 10;
       }
     }]);
 
@@ -50,5 +74,12 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
-  var snake = new Snake();
+  var snake = new Snake(); // intervalo de tiempo(función anonima,cuanto va a ejecutar la función)
+
+  setInterval(function () {
+    snake.right(); // limpiamos el canvas(x,y,ancho,alto)
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    snake.draw();
+  }, 1000 / 5);
 })();
