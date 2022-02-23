@@ -15,13 +15,67 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _classCallCheck(this, Square);
 
       this.x = x;
-      this.y = y;
+      this.y = y; //cuadrado de atras
+
+      this.back = null;
     }
 
     _createClass(Square, [{
       key: "draw",
       value: function draw() {
         ctx.fillRect(this.x, this.y, 10, 10);
+
+        if (this.hasBack()) {
+          this.back.draw();
+        }
+      }
+    }, {
+      key: "add",
+      value: function add() {
+        this.back = new Square(this.x, this.y);
+      } // devuelve true si tiene un cuadrado atras y false si no
+
+    }, {
+      key: "hasBack",
+      value: function hasBack() {
+        return this.back != null;
+      }
+    }, {
+      key: "copy",
+      value: function copy() {
+        if (this.hasBack()) {
+          this.back.x = this.x;
+          this.back.y = this.y;
+        }
+      } // derecha
+
+    }, {
+      key: "right",
+      value: function right() {
+        //el de atrás copia la dirección, es decir, sigue al de adelante
+        this.copy();
+        this.x += 10;
+      } // izquierda
+
+    }, {
+      key: "left",
+      value: function left() {
+        this.copy();
+        this.x -= 10;
+      } // arriba
+
+    }, {
+      key: "up",
+      value: function up() {
+        this.copy();
+        this.y -= 10;
+      } //abajo
+
+    }, {
+      key: "down",
+      value: function down() {
+        this.copy();
+        this.y += 10;
       }
     }]);
 
@@ -36,6 +90,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       this.head = new Square(100, 0);
       this.draw();
       this.direction = "right";
+      this.head.add();
     }
 
     _createClass(Snake, [{
@@ -71,10 +126,10 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }, {
       key: "move",
       value: function move() {
-        if (this.direction == "up") return this.head.y -= 10;
-        if (this.direction == "down") return this.head.y += 10;
-        if (this.direction == "left") return this.head.x -= 10;
-        if (this.direction == "right") return this.head.x += 10;
+        if (this.direction == "up") return this.head.up();
+        if (this.direction == "down") return this.head.down();
+        if (this.direction == "left") return this.head.left();
+        if (this.direction == "right") return this.head.right();
       }
     }]);
 
