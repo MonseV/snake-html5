@@ -35,6 +35,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       /* this.draw() */
       this.head = new Square(100, 0);
       this.draw();
+      this.direction = "right";
     }
 
     _createClass(Snake, [{
@@ -47,25 +48,33 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }, {
       key: "right",
       value: function right() {
-        this.head.x += 10;
+        this.direction = "right";
       } // izquierda
 
     }, {
       key: "left",
       value: function left() {
-        this.head.y -= 10;
+        this.direction = "left";
       } // arriba
 
     }, {
       key: "up",
       value: function up() {
-        this.head.y -= 10;
+        this.direction = "up";
       } //abajo
 
     }, {
       key: "down",
       value: function down() {
-        this.head.x += 10;
+        this.direction = "down";
+      }
+    }, {
+      key: "move",
+      value: function move() {
+        if (this.direction == "up") return this.head.y -= 10;
+        if (this.direction == "down") return this.head.y += 10;
+        if (this.direction == "left") return this.head.x -= 10;
+        if (this.direction == "right") return this.head.x += 10;
       }
     }]);
 
@@ -74,10 +83,22 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
-  var snake = new Snake(); // intervalo de tiempo(función anonima,cuanto va a ejecutar la función)
+  var snake = new Snake();
+  window.addEventListener("keydown", function (ev) {
+    /* console.log("Alguien presiono una tecla"); */
+    console.log(ev.keyCode); //izquierda
+
+    if (ev.keyCode == 37) return snake.left(); //arriba
+
+    if (ev.keyCode == 38) return snake.up(); //derecha
+
+    if (ev.keyCode == 39) return snake.right(); //abajo
+
+    if (ev.keyCode == 40) return snake.down();
+  }); // intervalo de tiempo(función anonima,cuanto va a ejecutar la función)
 
   setInterval(function () {
-    snake.right(); // limpiamos el canvas(x,y,ancho,alto)
+    snake.move(); // limpiamos el canvas(x,y,ancho,alto)
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     snake.draw();
