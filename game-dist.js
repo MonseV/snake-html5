@@ -10,6 +10,46 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 ;
 
 (function () {
+  var Random = /*#__PURE__*/function () {
+    function Random() {
+      _classCallCheck(this, Random);
+    }
+
+    _createClass(Random, null, [{
+      key: "get",
+      value: //metodo estatico que se manda desde la clase
+      function get(inicio, final) {
+        return Math.floor(Math.random() * final) + inicio;
+      }
+    }]);
+
+    return Random;
+  }();
+
+  var Food = /*#__PURE__*/function () {
+    function Food(x, y) {
+      _classCallCheck(this, Food);
+
+      this.x = x;
+      this.y = y;
+    } //dibuja en el canvas
+
+
+    _createClass(Food, [{
+      key: "draw",
+      value: function draw() {
+        ctx.fillRect(this.x, this.y, 10, 10);
+      }
+    }], [{
+      key: "generate",
+      value: function generate() {
+        return new Food(Random.get(0, 500), Random.get(0, 300));
+      }
+    }]);
+
+    return Food;
+  }();
+
   var Square = /*#__PURE__*/function () {
     function Square(x, y) {
       _classCallCheck(this, Square);
@@ -147,7 +187,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
-  var snake = new Snake();
+  var snake = new Snake(); //arreglo de comidas
+
+  var foods = [];
   window.addEventListener("keydown", function (ev) {
     //eliminamos los comportamientos default de la ventana
     ev.preventDefault(); //izquierda
@@ -166,6 +208,34 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     snake.move(); // limpiamos el canvas(x,y,ancho,alto)
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    snake.draw();
-  }, 1000 / 5);
+    snake.draw(); //dibuja toda la comida que se creo
+
+    drawFood();
+  }, 1000 / 5); // ejecuta cada cierto tiempo
+
+  setInterval(function () {
+    var food = Food.generate(); // agrega al arreglo las comidas que se generaron
+
+    foods.push(food); //ejecuta una sola vez pero cada cierto tiempo
+
+    setTimeout(function () {
+      // Elimina la comida
+      removeFromFoods(food);
+    }, 10000);
+  }, 4000);
+
+  function drawFood() {
+    for (var index in foods) {
+      var food = foods[index];
+      food.draw();
+    }
+  }
+
+  function removeFromFoods(food) {
+    // itera el arreglo de comida
+    foods = foods.filter(function (f) {
+      // si retorna verdadero lo sacamos del arreglo
+      return food !== f;
+    });
+  }
 })();

@@ -2,6 +2,29 @@
 
 ; (function () {
 
+  class Random {
+    //metodo estatico que se manda desde la clase
+    static get(inicio, final) {
+      return Math.floor(Math.random() * final) + inicio;
+    }
+  }
+
+  class Food {
+    constructor(x, y) {
+      this.x = x
+      this.y = y
+    }
+
+    //dibuja en el canvas
+    draw() {
+      ctx.fillRect(this.x, this.y, 10, 10)
+    }
+
+    static generate() {
+      return new Food(Random.get(0, 500), Random.get(0, 300));
+    }
+  }
+
   class Square {
     constructor(x, y) {
       this.x = x
@@ -119,6 +142,8 @@
 
 
   const snake = new Snake()
+  //arreglo de comidas
+  let foods = [];
 
   window.addEventListener("keydown", function (ev) {
     //eliminamos los comportamientos default de la ventana
@@ -145,6 +170,37 @@
     // limpiamos el canvas(x,y,ancho,alto)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     snake.draw()
+    //dibuja toda la comida que se creo
+    drawFood()
   }, 1000 / 5)
+
+  // ejecuta cada cierto tiempo
+  setInterval(function () {
+    const food = Food.generate()
+    // agrega al arreglo las comidas que se generaron
+    foods.push(food)
+
+    //ejecuta una sola vez pero cada cierto tiempo
+    setTimeout(function () {
+      // Elimina la comida
+      removeFromFoods(food)
+    }, 10000)
+
+  }, 4000)
+
+  function drawFood() {
+    for (const index in foods) {
+      const food = foods[index]
+      food.draw()
+    }
+  }
+
+  function removeFromFoods(food) {
+    // itera el arreglo de comida
+    foods = foods.filter(function (f) {
+      // si retorna verdadero lo sacamos del arreglo
+      return food !== f
+    })
+  }
 
 })()
