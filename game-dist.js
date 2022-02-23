@@ -32,13 +32,15 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       this.x = x;
       this.y = y;
+      this.width = 10;
+      this.height = 10;
     } //dibuja en el canvas
 
 
     _createClass(Food, [{
       key: "draw",
       value: function draw() {
-        ctx.fillRect(this.x, this.y, 10, 10);
+        ctx.fillRect(this.x, this.y, this.width, this.height);
       }
     }], [{
       key: "generate",
@@ -55,7 +57,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       _classCallCheck(this, Square);
 
       this.x = x;
-      this.y = y; //cuadrado de atras
+      this.y = y;
+      this.width = 10;
+      this.height = 10; //cuadrado de atras
 
       this.back = null;
     }
@@ -63,7 +67,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     _createClass(Square, [{
       key: "draw",
       value: function draw() {
-        ctx.fillRect(this.x, this.y, 10, 10);
+        ctx.fillRect(this.x, this.y, this.width, this.height);
 
         if (this.hasBack()) {
           this.back.draw();
@@ -180,6 +184,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         if (this.direction == "left") return this.head.left();
         if (this.direction == "right") return this.head.right();
       }
+    }, {
+      key: "eat",
+      value: function eat() {
+        this.head.add();
+      }
     }]);
 
     return Snake;
@@ -191,8 +200,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
   var foods = [];
   window.addEventListener("keydown", function (ev) {
-    //eliminamos los comportamientos default de la ventana
-    ev.preventDefault(); //izquierda
+    if (ev.keyCode > 36 && ev.keyCode < 41) ev.preventDefault(); //izquierda
 
     if (ev.keyCode == 37) return snake.left(); //arriba
 
@@ -227,7 +235,16 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
   function drawFood() {
     for (var index in foods) {
       var food = foods[index];
-      food.draw();
+
+      if (typeof food !== "undefined") {
+        food.draw(); //si choca la cabeza de vibora con la comida
+
+        if (hit(food, snake.head)) {
+          snake.eat(); //elimina la comida que comio la vibora
+
+          removeFromFoods(food);
+        }
+      }
     }
   }
 
@@ -237,5 +254,26 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       // si retorna verdadero lo sacamos del arreglo
       return food !== f;
     });
+  }
+
+  function hit(a, b) {
+    var hit = false; //Colsiones horizontales
+
+    if (b.x + b.width >= a.x && b.x < a.x + a.width) {
+      //Colisiones verticales
+      if (b.y + b.height >= a.y && b.y < a.y + a.height) hit = true;
+    } //Colisión de a con b
+
+
+    if (b.x <= a.x && b.x + b.width >= a.x + a.width) {
+      if (b.y <= a.y && b.y + b.height >= a.y + a.height) hit = true;
+    } //Colisión b con a
+
+
+    if (a.x <= b.x && a.x + a.width >= b.x + b.width) {
+      if (a.y <= b.y && a.y + a.height >= b.y + b.height) hit = true;
+    }
+
+    return hit;
   }
 })();

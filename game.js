@@ -13,11 +13,13 @@
     constructor(x, y) {
       this.x = x
       this.y = y
+      this.width = 10
+      this.height = 10
     }
 
     //dibuja en el canvas
     draw() {
-      ctx.fillRect(this.x, this.y, 10, 10)
+      ctx.fillRect(this.x, this.y, this.width, this.height)
     }
 
     static generate() {
@@ -29,12 +31,14 @@
     constructor(x, y) {
       this.x = x
       this.y = y
+      this.width = 10
+      this.height = 10
       //cuadrado de atras
       this.back = null
     }
 
     draw() {
-      ctx.fillRect(this.x, this.y, 10, 10);
+      ctx.fillRect(this.x, this.y, this.width, this.height);
       if (this.hasBack()) {
         this.back.draw()
       }
@@ -134,7 +138,9 @@
 
     }
 
-
+    eat() {
+      this.head.add()
+    }
   }
 
   const canvas = document.getElementById('canvas')
@@ -146,8 +152,7 @@
   let foods = [];
 
   window.addEventListener("keydown", function (ev) {
-    //eliminamos los comportamientos default de la ventana
-    ev.preventDefault()
+    if (ev.keyCode > 36 && ev.keyCode < 41) ev.preventDefault()
 
     //izquierda
     if (ev.keyCode == 37) return snake.left();
@@ -191,7 +196,15 @@
   function drawFood() {
     for (const index in foods) {
       const food = foods[index]
-      food.draw()
+      if (typeof food !== "undefined") {
+        food.draw()
+        //si choca la cabeza de vibora con la comida
+        if (hit(food, snake.head)) {
+          snake.eat()
+          //elimina la comida que comio la vibora
+          removeFromFoods(food)
+        }
+      }
     }
   }
 
@@ -201,6 +214,27 @@
       // si retorna verdadero lo sacamos del arreglo
       return food !== f
     })
+  }
+
+  function hit(a, b) {
+    var hit = false;
+    //Colsiones horizontales
+    if (b.x + b.width >= a.x && b.x < a.x + a.width) {
+      //Colisiones verticales
+      if (b.y + b.height >= a.y && b.y < a.y + a.height)
+        hit = true;
+    }
+    //Colisión de a con b
+    if (b.x <= a.x && b.x + b.width >= a.x + a.width) {
+      if (b.y <= a.y && b.y + b.height >= a.y + a.height)
+        hit = true;
+    }
+    //Colisión b con a
+    if (a.x <= b.x && a.x + a.width >= b.x + b.width) {
+      if (a.y <= b.y && a.y + a.height >= b.y + b.height)
+        hit = true;
+    }
+    return hit;
   }
 
 })()
