@@ -32,6 +32,9 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }, {
       key: "add",
       value: function add() {
+        // el ultimo cuadrado agrega otro cuadrado
+        if (this.hasBack()) return this.back.add(); // si no, crea un cuadrado
+
         this.back = new Square(this.x, this.y);
       } // devuelve true si tiene un cuadrado atras y false si no
 
@@ -44,6 +47,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       key: "copy",
       value: function copy() {
         if (this.hasBack()) {
+          this.back.copy();
           this.back.x = this.x;
           this.back.y = this.y;
         }
@@ -90,6 +94,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       this.head = new Square(100, 0);
       this.draw();
       this.direction = "right";
+      this.head.add();
+      this.head.add();
+      this.head.add();
+      this.head.add();
+      this.head.add();
       this.head.add();
     }
 
@@ -140,8 +149,8 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
   var ctx = canvas.getContext('2d');
   var snake = new Snake();
   window.addEventListener("keydown", function (ev) {
-    /* console.log("Alguien presiono una tecla"); */
-    console.log(ev.keyCode); //izquierda
+    //eliminamos los comportamientos default de la ventana
+    ev.preventDefault(); //izquierda
 
     if (ev.keyCode == 37) return snake.left(); //arriba
 
@@ -150,6 +159,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     if (ev.keyCode == 39) return snake.right(); //abajo
 
     if (ev.keyCode == 40) return snake.down();
+    return false;
   }); // intervalo de tiempo(función anonima,cuanto va a ejecutar la función)
 
   setInterval(function () {

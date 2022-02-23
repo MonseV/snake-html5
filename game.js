@@ -18,6 +18,10 @@
     }
 
     add() {
+      // el ultimo cuadrado agrega otro cuadrado
+      if (this.hasBack()) return this.back.add()
+
+      // si no, crea un cuadrado
       this.back = new Square(this.x, this.y)
     }
 
@@ -26,8 +30,9 @@
       return this.back != null
     }
 
-    copy(){
-      if(this.hasBack()){
+    copy() {
+      if (this.hasBack()) {
+        this.back.copy()
         this.back.x = this.x
         this.back.y = this.y
       }
@@ -65,6 +70,11 @@
       this.head = new Square(100, 0);
       this.draw()
       this.direction = "right"
+      this.head.add()
+      this.head.add()
+      this.head.add()
+      this.head.add()
+      this.head.add()
       this.head.add()
     }
 
@@ -111,8 +121,8 @@
   const snake = new Snake()
 
   window.addEventListener("keydown", function (ev) {
-    /* console.log("Alguien presiono una tecla"); */
-    console.log(ev.keyCode)
+    //eliminamos los comportamientos default de la ventana
+    ev.preventDefault()
 
     //izquierda
     if (ev.keyCode == 37) return snake.left();
@@ -125,6 +135,8 @@
 
     //abajo
     if (ev.keyCode == 40) return snake.down();
+
+    return false
   })
 
   // intervalo de tiempo(función anonima,cuanto va a ejecutar la función)
