@@ -125,6 +125,31 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
         this.copy();
         this.y += 10;
       }
+    }, {
+      key: "hit",
+      value: function hit(head) {
+        var segundo = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+        //primer elemento es la cabeza
+        if (this == head && !this.hasBack()) return false; //primer elemento y si hay algo atrás
+
+        if (this == head) return this.back.hit(head, true); // si el segundo elemento y no tiene algo atras
+
+        if (segundo && !this.hasBack()) return false; //segundo elemento y si hay algo atrás
+
+        if (segundo) return this.back.hit(head); //No es ni la cabea, ni el segundo
+
+        if (this.hasBack()) {
+          return squareHit(this, head) || this.back.hit(head);
+        } //No es la cabeza, ni el segundo y es el ultimo
+
+
+        return squareHit(this, head);
+      }
+    }, {
+      key: "hitBorder",
+      value: function hitBorder() {
+        return this.x > 490 || this.x < 0 || this.y > 290 || this.y < 0;
+      }
     }]);
 
     return Square;
@@ -156,24 +181,28 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     }, {
       key: "right",
       value: function right() {
+        if (this.direction === "left") return;
         this.direction = "right";
       } // izquierda
 
     }, {
       key: "left",
       value: function left() {
+        if (this.direction === "right") return;
         this.direction = "left";
       } // arriba
 
     }, {
       key: "up",
       value: function up() {
+        if (this.direction === "down") return;
         this.direction = "up";
       } //abajo
 
     }, {
       key: "down",
       value: function down() {
+        if (this.direction === "up") return;
         this.direction = "down";
       }
     }, {
@@ -188,6 +217,13 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       key: "eat",
       value: function eat() {
         this.head.add();
+      }
+    }, {
+      key: "dead",
+      value: function dead() {
+        // si hay un choque estamos muertos
+        //chocar conmigo mismo               //chocar con los bordes
+        return this.head.hit(this.head) || this.head.hitBorder();
       }
     }]);
 
@@ -212,13 +248,18 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
     return false;
   }); // intervalo de tiempo(función anonima,cuanto va a ejecutar la función)
 
-  setInterval(function () {
+  var animacion = setInterval(function () {
     snake.move(); // limpiamos el canvas(x,y,ancho,alto)
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     snake.draw(); //dibuja toda la comida que se creo
 
     drawFood();
+
+    if (snake.dead()) {
+      console.log("Se acabo");
+      window.clearInterval(animacion);
+    }
   }, 1000 / 5); // ejecuta cada cierto tiempo
 
   setInterval(function () {
@@ -254,6 +295,11 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
       // si retorna verdadero lo sacamos del arreglo
       return food !== f;
     });
+  }
+
+  function squareHit(cuadrado_uno, cuadrado_dos) {
+    //evalua si la cabeza choca con algun cuadrado
+    return cuadrado_uno.x == cuadrado_dos.x && cuadrado_uno.y == cuadrado_dos.y;
   }
 
   function hit(a, b) {

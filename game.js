@@ -89,6 +89,29 @@
       this.copy()
       this.y += 10
     }
+
+    hit(head, segundo = false) {
+      //primer elemento es la cabeza
+      if (this == head && !this.hasBack()) return false
+      //primer elemento y si hay algo atrás
+      if (this == head) return this.back.hit(head, true)
+      // si el segundo elemento y no tiene algo atras
+      if (segundo && !this.hasBack()) return false
+      //segundo elemento y si hay algo atrás
+      if (segundo) return this.back.hit(head)
+
+      //No es ni la cabea, ni el segundo
+      if (this.hasBack()) {
+        return squareHit(this, head) || this.back.hit(head)
+      }
+
+      //No es la cabeza, ni el segundo y es el ultimo
+      return squareHit(this, head)
+    }
+
+    hitBorder() {
+      return (this.x > 490 || this.x < 0 || this.y > 290 || this.y < 0)
+    }
   }
 
   class Snake {
@@ -112,21 +135,25 @@
 
     // derecha
     right() {
+      if (this.direction === "left") return;
       this.direction = "right"
     }
 
     // izquierda
     left() {
+      if (this.direction === "right") return;
       this.direction = "left"
     }
 
     // arriba
     up() {
+      if (this.direction === "down") return;
       this.direction = "up"
     }
 
     //abajo
     down() {
+      if (this.direction === "up") return;
       this.direction = "down"
     }
 
@@ -141,8 +168,13 @@
     eat() {
       this.head.add()
     }
-  }
 
+    dead() {
+      // si hay un choque estamos muertos
+      //chocar conmigo mismo               //chocar con los bordes
+      return this.head.hit(this.head) || this.head.hitBorder()
+    }
+  }
   const canvas = document.getElementById('canvas')
   const ctx = canvas.getContext('2d')
 
@@ -170,13 +202,18 @@
   })
 
   // intervalo de tiempo(función anonima,cuanto va a ejecutar la función)
-  setInterval(function () {
+  const animacion = setInterval(function () {
     snake.move()
     // limpiamos el canvas(x,y,ancho,alto)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     snake.draw()
     //dibuja toda la comida que se creo
     drawFood()
+
+    if (snake.dead()) {
+      console.log("Se acabo")
+      window.clearInterval(animacion)
+    }
   }, 1000 / 5)
 
   // ejecuta cada cierto tiempo
@@ -214,6 +251,11 @@
       // si retorna verdadero lo sacamos del arreglo
       return food !== f
     })
+  }
+
+  function squareHit(cuadrado_uno, cuadrado_dos) {
+    //evalua si la cabeza choca con algun cuadrado
+    return cuadrado_uno.x == cuadrado_dos.x && cuadrado_uno.y == cuadrado_dos.y
   }
 
   function hit(a, b) {
